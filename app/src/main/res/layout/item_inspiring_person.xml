@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageView
+        android:id="@+id/img_person"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/unknown_person"
+        android:background="@android:color/transparent"/>
+
+    <TextView
+        android:id="@+id/tvItem_inspiringPerson_name"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_marginTop="16dp"
+        android:textSize="25dp"
+        app:layout_constraintHorizontal_bias="0.433"
+        app:layout_constraintLeft_toRightOf="@id/img_person"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@tools:sample/full_names" />
+
+    <TextView
+        android:id="@+id/tvItem_inspiringPerson_life"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:textSize="20dp"
+        app:layout_constraintTop_toBottomOf="@id/tvItem_inspiringPerson_name"
+        app:layout_constraintLeft_toRightOf="@id/img_person"
+        tools:text="@tools:sample/date/mmddyy"/>
+
+    <TextView
+        android:id="@+id/tvItem_inspiringPerson_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_goneMarginRight="10dp"
+        android:breakStrategy="high_quality"
+        android:textSize="15dp"
+        app:layout_constraintLeft_toRightOf="@id/img_person"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvItem_inspiringPerson_life"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constrainedWidth="true"
+        tools:text="One of the most influential figures of computing science's founding generation, Dijkstra helped shape the new discipline both as an engineer and a theorist." />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
