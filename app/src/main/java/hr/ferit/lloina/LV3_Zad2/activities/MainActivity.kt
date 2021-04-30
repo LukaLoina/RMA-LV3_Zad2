@@ -1,21 +1,13 @@
-package hr.ferit.lloina.LV2.activities
+package hr.ferit.lloina.LV3_Zad2.activities
 
-import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
-import hr.ferit.lloina.LV2.R
-import hr.ferit.lloina.LV2.adapters.InspiringPersonAdapter
-import hr.ferit.lloina.LV2.adapters.ViewPagerAdapter
-import hr.ferit.lloina.LV2.databinding.ActivityMainBinding
-import hr.ferit.lloina.LV2.databinding.FragmentInspiringPersonListBinding
-import hr.ferit.lloina.LV2.databinding.FragmentPersonInputBinding
-import hr.ferit.lloina.LV2.fragments.InspiringPersonInputFragment
-import hr.ferit.lloina.LV2.fragments.InspiringPersonsListFragment
-import hr.ferit.lloina.LV2.model.InspiringPerson
-import hr.ferit.lloina.LV2.repository.PeopleRepository
+import hr.ferit.lloina.LV3_Zad2.adapters.ViewPagerAdapter
+import hr.ferit.lloina.LV3_Zad2.databinding.ActivityMainBinding
+import hr.ferit.lloina.LV3_Zad2.fragments.InspiringPersonsListFragment
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewPager.registerOnPageChangeCallback(event)
-        val screens = listOf<() -> Fragment>({InspiringPersonsListFragment.create()}, { InspiringPersonInputFragment.create()})
+        val screens = listOf<() -> Fragment>({ InspiringPersonsListFragment.create()}, { InspiringPersonInputFragment.create()})
         viewPager.adapter = ViewPagerAdapter(this, screens)
     }
     companion object{
@@ -50,7 +42,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createPeopleList(){
-        val list = PeopleRepository.inspiringPersonList
+        //val list = PeopleRepository.inspiringPersonList
+        /*
         list.add(InspiringPerson("Alonzo Church",
                 "Alonzo Church was an American mathematician and logician who made major contributions to mathematical logic and the foundations of theoretical computer science. He is best known for the lambda calculus, Church–Turing thesis, proving the unsolvability of the Entscheidungsproblem, Frege–Church ontology, and the Church–Rosser theorem.",
                 "14.6.1903",
@@ -95,7 +88,7 @@ class MainActivity : AppCompatActivity() {
                 "Every time I see some piece of medical research saying that caffeine is good for you, I high-five myself. Because I'm going to live forever. "),
                 BitmapFactory.decodeResource(resources, R.drawable.linus_torvalds)))
         //list.add(InspiringPerson("","","", "", mutableListOf(),  BitmapFactory.decodeResource(resources, R.drawable.unknown_person)))
-
+        */
     }
 }
 

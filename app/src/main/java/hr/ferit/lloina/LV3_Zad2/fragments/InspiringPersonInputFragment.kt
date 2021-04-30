@@ -1,29 +1,28 @@
-package hr.ferit.lloina.LV2.fragments
 
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.Image
-import android.media.ImageReader
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.DatePicker
 import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
-import hr.ferit.lloina.LV2.R
-import hr.ferit.lloina.LV2.activities.MainActivity
-import hr.ferit.lloina.LV2.databinding.FragmentPersonInputBinding
-import hr.ferit.lloina.LV2.model.InspiringPerson
-import hr.ferit.lloina.LV2.repository.PeopleRepository
+import hr.ferit.lloina.LV3_Zad2.R
+import hr.ferit.lloina.LV3_Zad2.activities.MainActivity
+import hr.ferit.lloina.LV3_Zad2.databinding.FragmentPersonInputBinding
+import hr.ferit.lloina.LV3_Zad2.persistance.InspiringPersonDetails
+import hr.ferit.lloina.LV3_Zad2.persistance.InspiringPersonDatabase
+import hr.ferit.lloina.LV3_Zad2.persistance.InspiringQuote
+import hr.ferit.lloina.LV3_Zad2.repository.PeopleRepository
 import java.util.*
 
 class InspiringPersonInputFragment() : Fragment(){
     lateinit var inspiringPersonInput : FragmentPersonInputBinding;
+    var newImage : Bitmap? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         inspiringPersonInput = FragmentPersonInputBinding.inflate(inflater, container, false)
@@ -51,7 +50,7 @@ class InspiringPersonInputFragment() : Fragment(){
     private fun removePerson() {
         val id = PeopleRepository.currentPerson
         if(id != null){
-            PeopleRepository.inspiringPersonList.removeAt(id)
+            InspiringPersonDatabase.getInstance(this.context!!).inspiringPersonDAO.delete(id)
             PeopleRepository.currentPerson=null;
         }
         clearInput()
@@ -64,17 +63,24 @@ class InspiringPersonInputFragment() : Fragment(){
     }
 
     private fun populateIfSelected(){
-        if(PeopleRepository.currentPerson == -1) {
+        if(PeopleRepository.currentPerson == -1L) {
             clearInput()
             PeopleRepository.currentPerson = null
-        } else if(PeopleRepository.currentPerson != null){
-            var person = PeopleRepository.inspiringPersonList.get(PeopleRepository.currentPerson!!)
-            inspiringPersonInput.etName.setText(person.name)
-            inspiringPersonInput.tvBirthDate.setText(person.born)
-            inspiringPersonInput.tvDeathDate.setText(person.died)
-            inspiringPersonInput.etDescription.setText(person.description)
-            inspiringPersonInput.etCitations.setText(person.quotes.joinToString( "\n\n"))
-            inspiringPersonInput.imbtnImage.setImageBitmap(person.image)
+        } else if(PeopleRepository.currentPerson != null) {
+            val db = InspiringPersonDatabase.getInstance(this.context!!).inspiringPersonDAO
+            val person = db.get(PeopleRepository.currentPerson!!) ?: return
+            inspiringPersonInput.etName.setText(person.details.name)
+            inspiringPersonInput.tvBirthDate.setText(person.details.born)
+            inspiringPersonInput.tvDeathDate.setText(person.details.died)
+            inspiringPersonInput.etDescription.setText(person.details.description)
+            val quotes = person.quotes.map { it.quote }
+            val text = quotes.joinToString("\n\n")
+            inspiringPersonInput.etCitations.setText(text)
+            if (newImage == null) {
+                inspiringPersonInput.imbtnImage.setImageBitmap(person.details.image)
+            } else {
+                inspiringPersonInput.imbtnImage.setImageBitmap(newImage)
+            }
         }
     }
 
@@ -88,6 +94,7 @@ class InspiringPersonInputFragment() : Fragment(){
     }
 
     private fun addPerson(){
+        val db = InspiringPersonDatabase.getInstance(this.context!!).inspiringPersonDAO
         val name = inspiringPersonInput.etName.text.toString()
         val description = inspiringPersonInput.etDescription.text.toString()
         val born = inspiringPersonInput.tvBirthDate.text.toString()
@@ -96,17 +103,24 @@ class InspiringPersonInputFragment() : Fragment(){
         val quotes = inspiringPersonInput.etCitations.text.toString().lines().filter { it.isNotEmpty() }.toMutableList()
 
         if(PeopleRepository.currentPerson == null) {
-            val person = InspiringPerson(name, description, born, died, quotes)
-            person.image = image
-            PeopleRepository.inspiringPersonList.add(person);
-        } else {
-            var person = PeopleRepository.inspiringPersonList.get(PeopleRepository.currentPerson!!)
+            val person = InspiringPersonDetails()
             person.name = name
             person.description = description
             person.born = born
             person.died = died
             person.image = image
-            person.quotes = quotes
+            val personId = db.insert(person);
+            quotes.map { InspiringQuote(personId, it) }.forEach{db.insert(it)}
+        } else {
+            val person = db.get(PeopleRepository.currentPerson!!) ?: return
+            person.details.name = name
+            person.details.description = description
+            person.details.born = born
+            person.details.died = died
+            person.details.image = image
+            person.quotes.filter { it.quote !in quotes }.forEach { db.deleteQuote(it.id) }
+            quotes.filter { it !in person.quotes.map{ it.quote } }.forEach { db.insert(InspiringQuote(person.details.id, it)) }
+            db.update(person.details)
             editPerson(null)
         }
 
@@ -128,6 +142,7 @@ class InspiringPersonInputFragment() : Fragment(){
             if(data == null || data.data == null) return
             val ins = this.context?.contentResolver?.openInputStream(data.data!!)
             val image = BitmapFactory.decodeStream(ins)
+            newImage = image;
             inspiringPersonInput.imbtnImage.setImageBitmap(image);
         }
     }
@@ -138,7 +153,7 @@ class InspiringPersonInputFragment() : Fragment(){
             return InspiringPersonInputFragment()
         }
 
-        fun editPerson(id : Int?) {
+        fun editPerson(id : Long?) {
             PeopleRepository.currentPerson = id;
         }
 

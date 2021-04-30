@@ -1,17 +1,11 @@
-package hr.ferit.lloina.LV2.adapters
+package hr.ferit.lloina.LV3_Zad2.adapters
 
-import android.database.DataSetObserver
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import hr.ferit.lloina.LV2.R
-import hr.ferit.lloina.LV2.activities.MainActivity
-import hr.ferit.lloina.LV2.fragments.InspiringPersonInputFragment
-import hr.ferit.lloina.LV2.model.InspiringPerson
-import hr.ferit.lloina.LV2.repository.PeopleRepository
+import hr.ferit.lloina.LV3_Zad2.R
+import hr.ferit.lloina.LV3_Zad2.activities.MainActivity
+import hr.ferit.lloina.LV3_Zad2.persistance.InspiringPerson
 
 class InspiringPersonAdapter(inspiringPersons : List<InspiringPerson>) : RecyclerView.Adapter<InspiringPersonHolder>() {
 
@@ -32,13 +26,15 @@ class InspiringPersonAdapter(inspiringPersons : List<InspiringPerson>) : Recycle
         view.setOnLongClickListener {
             val position = holder.adapterPosition
             if (position != RecyclerView.NO_POSITION) {
-                InspiringPersonInputFragment.editPerson(position)
+                InspiringPersonInputFragment.editPerson(inspiringPersons[position].details.id)
                 MainActivity.setPage(2)
             }
             true
         }
         return holder
     }
+
+
 
     override fun getItemCount(): Int = inspiringPersons.size
 

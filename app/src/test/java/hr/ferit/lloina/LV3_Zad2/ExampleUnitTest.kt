@@ -1,4 +1,4 @@
-package hr.ferit.lloina.LV2
+package hr.ferit.lloina.LV3_Zad2
 
 import org.junit.Test
 
